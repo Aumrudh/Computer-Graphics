@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Liang barsky Line Drawing</title>
+</head>
+<body>
+<center>
+<h1>Liang barsky Line Drawing</h1>
+<button onclick="call()" style="top:11% left:55%">Click To start drawing</button></center>
+<center><canvas id="c" width="500" height="500"></canvas></center>
+<script type="text/javascript">
+	function min(a,b,c ){
+		var m=a;
+		if(m>b){
+			m=b;
+		}
+		if(m>c){
+			m=c;
+		}
+		return m;
+	}
+	function max(a,b,c ){
+		var m=a;
+		if(m<b){
+			m=b;
+		}
+		if(m<c){
+			m=c;
+		}
+		return m;
+	}
+function call(){
+	var p1=(window.prompt("Enter xwmin ywmin point of Window ").split(" "));
+	var xwmin=parseInt(p1[0]);
+	var ywmin=parseInt(p1[1]);
+	var p2=(window.prompt("Enter xwmax ywmax point of Window ").split(" "));
+	var xwmax=parseInt(p2[0]);
+	var ywmax=parseInt(p2[1]);
+	var p3=(window.prompt("Enter x1 y1 point of line ").split(" "));
+	var x1=parseInt(p3[0]);
+	var y1=parseInt(p3[1]);
+	var p4=(window.prompt("Enter x2 y2 point of line ").split(" "));
+	var x2=parseInt(p4[0]);
+	var y2=parseInt(p4[1]);
+	canvas=document.getElementById("c");
+	context=canvas.getContext("2d");
+	context.beginPath();
+	context.lineWidth = 4;
+	context.moveTo(xwmin,ywmin);
+	context.lineTo(xwmin,ywmax);
+	context.lineTo(xwmax,ywmax);
+	context.lineTo(xwmax,ywmin);
+	context.lineTo(xwmin,ywmin);
+	context.stroke();
+	context.closePath();
+	var dy=y2-y1;
+	var dx=x2-x1;
+	var p0=-dx;
+	var p1=dx;
+	var p2=-dy;
+	var p3=dy;
+	var q0=x1-xwmin;
+	var q1=xwmax-x1;
+	var q2=y1-ywmin;
+	var q3=ywmax-y1;
+	if(dx!=0 && dy!=0){
+		var u0=p0/q0;
+		var u1=p1/q1;
+		var u2=p2/q2;
+		var u3=p3/q3;
+		if(u0<0 || u0>1){
+			u0=0;
+		}
+		if(u1<0 || u1>1){
+			u1=1;
+		}
+		if(u2<0 || u2>1){
+			u2=0;
+		}
+		if(u3<0 || u3>1){
+			u3=1;
+		}
+		var uenter=max(0,u0,u2);
+		var uexit=min(1,u1,u3);
+		console.log(uenter);
+		console.log(uexit);
+		if(uenter<uexit){
+			var cx1=x1+uenter*dx;
+			var cy1=x1+uenter*dy;
+			var cx2=x1+uexit*dx;
+			var cy2=x1+uexit*dy;
+			context.beginPath();
+			context.lineWidth=2;
+			context.moveTo(x1,y1);
+			context.lineTo(cx1,cy1);
+			context.lineTo(cx2,cy2);
+			context.lineTo(x2,y2);
+			context.stroke();
+			context.closePath();
+		}
+	}
+	else{
+		context.beginPath();
+		context.lineWidth=2;
+		context.moveTo(x1,y1);
+		context.lineTo(x2,y2);
+		context.stroke();
+		context.closePath();
+	}
+	}
+</script>
+</body>
+</html>
+
+

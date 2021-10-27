@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<body>
+<center>
+	<canvas id = "c" width = "800px" height = "800px"/>
+</center>
+<script>
+canvas = document.getElementById("c");
+context = canvas.getContext("2d");
+context.beginPath();
+var xvmax = canvas.width;
+var yvmax = canvas.height;
+var xvmin=0;
+var yvmin=0;
+
+var xmin=-2.5;
+var xmax=1.5;
+var ymin=-2;
+var ymax=2;
+
+
+var color=255;
+for (var ix = 0; ix < 800; ++ix){
+	var x=xmin+(xmax-xmin)*ix/800;
+	//var x=((ix-ymin)/(ymax-ymin))*800;
+	for (var iy = 0; iy < 800; ++iy){
+		var y=ymin+(ymax-ymin)*iy/800;
+		//var y=((iy-xmin)/(xmax-xmin))*800;
+		var k=0;
+		var a=x;
+		var b=y;
+		var ca=a;
+		var cb=b;
+		while(k<100){
+			k++;
+			var a2=a*a-b*b;
+			var b2=2*a*b;
+			a=a2+ca;
+			b=b2+cb;
+			var flag=0;
+			if(a+b>4){
+				flag=1;
+				break;
+			}
+		}
+
+		if(flag==1){
+			var c=color.toString(16);
+			color=(color+1)%256;
+			context.strokeStyle='#'+c+c+c;
+			context.strokeRect(ix,iy,1,1);
+		}
+		else{
+			var c1=color.toString(16);
+			color=(color+1)%256;
+			var c2=255-color;
+			var c3=c2.toString(16);
+			context.strokeStyle='#'+'0'+'0'+'0';
+			context.strokeRect(ix,iy,1,1);
+		}
+	}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<body>
+<canvas id="c" width ="500px" height="500px"/>
+<script>
+
+function draw(x1,y1,x2,y2,color){
+	canvas =document.getElementById('c');
+	context=canvas.getContext("2d");
+	context.moveTo(x1,y1);
+	context.lineTo(x2,y2);
+	context.stroke();
+}
+
+function drawKoch(x,y,angle,length,n){
+  var rad;
+  if(n==0){
+	rad=(angle*Math.PI)/180;
+	draw(x,y,x+length*Math.cos(rad),y+length*Math.sin(rad),'red');
+  }
+  else{
+	n--;
+	length/=3;
+	drawKoch(x,y,angle,length,n);
+	rad=(angle*Math.PI)/180;
+	x=x+length*Math.cos(rad);
+	y=y+length*Math.sin(rad);
+	angle-=60;
+	rad=(angle*Math.PI)/180;
+	drawKoch(x,y,angle,length,n);
+
+	x=x+length*Math.cos(rad);
+	y=y+length*Math.sin(rad);
+	angle+=120;
+	rad=(angle*Math.PI)/180;
+	drawKoch(x,y,angle,length,n);
+	
+	x=x+length*Math.cos(rad);
+	y=y+length*Math.sin(rad);
+	angle-=60;
+	rad=(angle*Math.PI)/180;
+	drawKoch(x,y,angle,length,n);
+  }
+}
+drawKoch(150,150,0,270,6);
+
+</script>
+</body>
+</hyml>
+	
+

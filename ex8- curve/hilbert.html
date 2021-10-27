@@ -1,0 +1,73 @@
+<html>
+    <canvas id="c1" style= "border: 2px solid black;" width = "500px" height = "500px"></canvas>
+    <script>
+        const canvas=document.getElementById("c1");
+        const c = canvas.getContext("2d");
+        const x = "-YF+XFX+FY-"
+        const y = "+XF-YFY-FX+"
+        let a = 0;
+        let len = 10;
+        let res;
+        let x1 = 0;
+        let y1 = 0;
+
+        function drawLine(x1,y1,x2,y2){
+                c.beginPath();
+                c.lineWidth=1;
+                c.moveTo(x1+250,250-y1);
+                c.lineTo(x2+250,250-y2);
+                c.stroke();
+        }
+        function hilbert(s,n)
+        {
+            if(n==0)
+            {
+                console.log(s);
+                for (var i = 0; i < s.length; i++)
+                {
+                    if(s.charAt(i) == '-')
+                    {
+                        a += 90;
+
+                    }
+                    else if(s.charAt(i) == '+')
+                    {
+                        a -= 90;
+                       
+                    }
+                    else if(s.charAt(i) == 'F')
+                    {
+                        let x2,y2;
+                        x2 = x1+len*Math.cos(Math.PI/180*a);
+                        y2 = y1+len*Math.sin(Math.PI/180*a);
+                        drawLine(x1,y1,x2,y2);
+                        x1 = x2;
+                        y1 = y2;
+                    }          
+                }
+            }
+            else
+            {
+                var s2="";
+                for (var i = 0; i < s.length; i++) {
+                    if(s.charAt(i) == 'X')
+                    {
+                        s2 += x;
+                    }
+                    else if(s.charAt(i) == 'Y')
+                    {
+                        s2 += y;
+                    }
+                    else
+                    {
+                        s2 += s[i];
+                    }
+                }
+                hilbert(s2,--n);
+            }
+        }
+        hilbert(x,3);
+   </script>
+</html>
+
+

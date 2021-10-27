@@ -1,0 +1,340 @@
+<html>
+	<style>
+		button{
+			background-color:black;
+			color:white;
+			border: none;
+			text-align:center;
+			padding: 15px 20px;
+			border-radius: 16px;
+		}
+		h2{ text-align:center }
+		*{ font-family: Segoe UI; }
+		#head2{
+			padding-left:30px;
+		}
+		
+		div{
+			font-weight:bold;
+		}
+	</style>
+	<body>
+		<center><h1 style="text-align:center">Sutherland Hodgeman Polygon Clipping</h1></center>
+		<div id="wcoord"></div>
+		<div id="lcoord"></div>
+		<canvas id="c1" width="1200" height="800" style="position: absolute; left: 600px;" />
+	<script>
+		var xmin,ymin,xmax,ymax,n;
+		var xcoord=[],ycoord=[],neigh=[],clipp=[];
+		// 30 150 150 300 300 150 150 30
+		/*xmin=parseInt(window.prompt("Enter  xmin value"));
+		ymin=parseInt(window.prompt("Enter  ymin value"));
+		xmax=parseInt(window.prompt("Enter  xmax value"));
+		ymax=parseInt(window.prompt("Enter  ymax value"));*/
+		xmin=50;ymin=50;xmax=250;ymax=250;
+		can=document.getElementById("c1");
+		ctx=can.getContext("2d");
+		ctx.beginPath();
+		ctx.lineWidth = 4;
+		//ctx.strokeStyle="white";
+		ctx.moveTo(xmin,ymin);
+		ctx.lineTo(xmax,ymin);
+		ctx.lineTo(xmax,ymax);						//Draw Window
+		ctx.lineTo(xmin,ymax);
+		ctx.lineTo(xmin,ymin);
+		ctx.stroke();
+		ctx.closePath();
+		
+		
+		n=parseInt(window.prompt("Enter no of vertices"));
+		for(var i=0;i<n;i++){
+			xcoord[i]=parseInt(window.prompt("Enter x coordinate of "+ i +" vertice"));
+			ycoord[i]=parseInt(window.prompt("Enter y coordinate of "+ i +" vertice"));
+		}
+		
+		var wcord = document.getElementById("wcoord");
+		//wcord.innerHTML="Window Coordinates"+" "+xmin.toString()+","+ymin.toString()+" "+xmax.toString()+","+ymax.toString();
+		
+		var pcord = document.getElementById("lcoord");
+		/*var values="Polygon Coordinates ";
+		for(var i=0;i<xcoord.length;i++){
+			values+=xcoord[i].toString()+","+ycoord[i].toString()+" ";
+		}
+		pcord.innerHTML=values;
+		*/
+		ctx.beginPath();
+		//ctx.strokeStyle="red";
+		ctx.moveTo(xcoord[0],ycoord[0]);
+		for(var i=1;i<n;i++){
+			drawline(xcoord[i],ycoord[i]);
+		}
+		ctx.lineTo(xcoord[0],ycoord[0]);
+		ctx.stroke();
+		ctx.closePath();
+		
+		ctx.beginPath();
+		ctx.lineWidth = 4;
+		
+		ctx.moveTo(xmin,ymin+300);
+		ctx.lineTo(xmax,ymin+300);
+		ctx.lineTo(xmax,ymax+300);						//Draw Window
+		ctx.lineTo(xmin,ymax+300);
+		ctx.lineTo(xmin,ymin+300);
+		ctx.stroke();
+		ctx.closePath();
+		
+		
+		for(var j=0;j<n;j++){
+			if(j==0)
+				neigh.push([xcoord[n-1],ycoord[n-1],xcoord[1],ycoord[1]]);
+			else if(j==n-1)
+				neigh.push([xcoord[j-1],ycoord[j-1],xcoord[0],ycoord[0]]);
+			else
+				neigh.push([xcoord[j-1],ycoord[j-1],xcoord[j+1],ycoord[j+1]]);
+		}
+		
+		for(var k=0;k<neigh.length;k++){
+			console.log("At"+k+"th value neighbours"+neigh[k]);
+		}
+		
+		
+		Clipper(xcoord,xmin,"<","x");  //leftClipper
+		Clipper(ycoord,ymax,">","y");  //bottom Clipper
+		Clipper(xcoord,xmax,">","x");  //right Clipper
+		Clipper(ycoord,ymin,"<","y");  //top Clipper
+		
+		
+		function Clipper(xarr,y,sym,axis){
+		    if(sym=="<"){
+				for(var i=0;i<xarr.length;i++){
+					var intersecpoint=[],intersecpoint1=[],orres=[],slope,slope1,pointflag,neighflag,val;
+					if(getRegionCode(xcoord[i],ycoord[i]).toString()=="0,0,0,0"){
+							intersecpoint[0]=xcoord[i]; intersecpoint[1]=ycoord[i];
+							clipp.push([intersecpoint[0],intersecpoint[1]]);
+					}
+					else if(xarr[i]<y){
+						if(xarr[i]<y)            //0 -out  1-in
+							pointflag=0;
+						else
+							pointflag=1;
+						
+						if(axis=="x")
+							val=neigh[i][0];
+						else if(axis=="y")
+							val=neigh[i][1]
+						
+						if(val<y)            //0 -out  1-in
+							neighflag=0;
+						else
+						    neighflag=1;
+						
+						  
+						if(pointflag==1 && neighflag==1){
+							intersecpoint[0]=xcoord[i]; intersecpoint[1]=ycoord[i];
+						}
+						else if((pointflag==0 && neighflag==1) || (pointflag==1 && neighflag==0)){
+							slope=((neigh[i][1]-ycoord[i])/(neigh[i][0]-xcoord[i]));
+							intersecpoint=getIntersection(getRegionCode(xcoord[i],ycoord[i]),xcoord[i],ycoord[i],slope);
+							if(i==0){
+								neigh[n-1][2]=intersecpoint[0];  neigh[n-1][3]=intersecpoint[1];
+							}
+							else{
+								neigh[i-1][2]=intersecpoint[0];  neigh[i-1][3]=intersecpoint[1];
+							}
+						}
+						if(xarr[i]<y)            //0 -out  1-in
+							pointflag=0;
+						else
+							pointflag=1;
+						
+						if(axis=="x")
+							val=neigh[i][2];
+						else if(axis=="y")
+							val=neigh[i][3]
+						
+						if(val<y)            //0 -out  1-in
+							neighflag=0;
+						else
+						    neighflag=1;
+							
+						
+						
+						if(pointflag==1 && neighflag==1){
+							intersecpoint1[0]=xcoord[i]; intersecpoint1[1]=ycoord[i];
+						}
+						else if((pointflag==0 && neighflag==1) || (pointflag==1 && neighflag==0)){
+							slope1=((neigh[i][3]-ycoord[i])/(neigh[i][2]-xcoord[i]));
+							intersecpoint1=getIntersection(getRegionCode(xcoord[i],ycoord[i]),xcoord[i],ycoord[i],slope1);
+							if(i==n-1){
+								neigh[0][0]=intersecpoint1[0];  neigh[0][1]=intersecpoint1[1];
+							}
+							else{
+								neigh[i+1][0]=intersecpoint1[0];  neigh[i+1][1]=intersecpoint1[1];
+							}
+						}
+						clipp.push([intersecpoint[0],intersecpoint[1]]);
+						clipp.push([intersecpoint1[0],intersecpoint1[1]]);
+					}
+				}
+			}
+			else if(sym==">"){
+				for(var i=0;i<xarr.length;i++){
+					var intersecpoint=[],intersecpoint1=[],slope,slope1,pointflag,neighflag,val;;
+					if(getRegionCode(xcoord[i],ycoord[i]).toString()=="0,0,0,0"){
+							intersecpoint[0]=xcoord[i]; intersecpoint[1]=ycoord[i];
+							clipp.push([intersecpoint[0],intersecpoint[1]]);
+					}
+					else if(xarr[i]>y){
+
+						if(xarr[i]>y)            //0 -out  1-in
+							pointflag=0;
+						else
+							pointflag=1;
+						
+						if(axis=="x")
+							val=neigh[i][0];
+						else if(axis=="y")
+							val=neigh[i][1]
+						
+						if(val>y)            //0 -out  1-in
+							neighflag=0;
+						else
+						    neighflag=1;
+							
+						if(pointflag==1 && neighflag==1){
+							intersecpoint[0]=xcoord[i]; intersecpoint[1]=ycoord[i];
+						}
+						else if((pointflag==0 && neighflag==1) || (pointflag==1 && neighflag==0)){
+							slope=((neigh[i][1]-ycoord[i])/(neigh[i][0]-xcoord[i]));
+							intersecpoint=getIntersection(getRegionCode(xcoord[i],ycoord[i]),xcoord[i],ycoord[i],slope);
+							if(i==0){
+								neigh[n-1][2]=intersecpoint[0];  neigh[n-1][3]=intersecpoint[1];
+							}
+							else{
+								neigh[i-1][2]=intersecpoint[0];  neigh[i-1][3]=intersecpoint[1];
+							}
+						}
+						if(xarr[i]>y)            //0 -out  1-in
+							pointflag=0;
+						else
+							pointflag=1;
+						
+						if(axis=="x")
+							val=neigh[i][2];
+						else if(axis=="y")
+							val=neigh[i][3]
+						
+						if(val>y)            //0 -out  1-in
+							neighflag=0;
+						else
+						    neighflag=1;
+						
+						if(pointflag==1 && neighflag==1){
+							intersecpoint1[0]=xcoord[i]; intersecpoint1[1]=ycoord[i];
+						}
+						else if((pointflag==0 && neighflag==1) || (pointflag==1 && neighflag==0)){
+							slope1=((neigh[i][3]-ycoord[i])/(neigh[i][2]-xcoord[i]));
+							intersecpoint1=getIntersection(getRegionCode(xcoord[i],ycoord[i]),xcoord[i],ycoord[i],slope1);
+							if(i==n-1){
+								neigh[0][0]=intersecpoint1[0];  neigh[0][1]=intersecpoint1[1];
+							}
+							else{
+								neigh[i+1][0]=intersecpoint1[0];  neigh[i+1][1]=intersecpoint1[1];
+							}
+						}
+						clipp.push([intersecpoint[0],intersecpoint[1]]);
+						clipp.push([intersecpoint1[0],intersecpoint1[1]]);
+					}
+				}
+			}
+		}
+			
+
+		//clipp.sort();
+		ctx.beginPath();
+		ctx.strokeStyle="red";
+		ctx.moveTo(clipp[0][0],clipp[0][1]+300);
+		console.log(clipp[0][0],clipp[0][1]);
+		newdrawline(clipp);
+		
+		function drawline(xaxis,yaxis){
+				ctx.lineTo(xaxis,yaxis);
+				ctx.stroke();
+		}
+		
+		function newdrawline(clipp){
+			for(var k=1;k<clipp.length;k++){
+				console.log(clipp[k][0],clipp[k][1]);
+				ctx.lineTo(clipp[k][0],clipp[k][1]+300);
+				ctx.stroke();
+			}
+		}
+		
+		ctx.lineTo(clipp[0][0],clipp[0][1]+300);
+		ctx.stroke();
+		ctx.fillStyle="yellow";
+		ctx.fill();
+		ctx.closePath();
+		
+		function getRegionCode(x,y){			//function to find regioncode
+			var region = [0,0,0,0];
+			if((x-xmin)<0)			//Left
+				region[3]=1;
+			if((xmax-x)<0)			//Right
+				region[2]=1;
+			if((y-ymin)<0)			//Bottom
+				region[1]=1;
+			if((ymax-y)<0)			//Top
+				region[0]=1;
+			return region;
+		}
+		function getIntersection(regioncode,x,y,slope){
+			var Regioncode=regioncode,X=0,Y=0,flag=0;
+			var intersecpoint=[0,0];
+			if((Regioncode.toString()=="0,0,0,0")){			//Starting point is inside-window destination point is outside
+					intersecpoint[0]=x; intersecpoint[1]=y;
+					return intersecpoint;
+			}
+			for(var i=0; i<2  ;i++){						//Iterating from right to left on regioncode finding which x or y can be set
+				for(var j=3;j>=0;j--){
+					if(j==3 && Regioncode[j]==1 && flag==0){
+						X=xmin;
+						flag=1;
+					}
+					if(j==2 && Regioncode[j]==1 && flag==0){
+						X=xmax;
+						flag=1;
+					}
+					if(j==1 && Regioncode[j]==1 && flag==0){
+						Y=ymin;
+						flag=1;
+					}
+					if(j==0 && Regioncode[j]==1 && flag==0){
+						Y=ymax;
+						flag=1;
+					}
+					if(flag==1)
+						break;
+				}
+				flag=0;
+				if(X!=0 && Y==0){		//Find intersection point
+					Y=y+(slope*(X-x));
+
+				}
+				else if(Y!=0 && X==0){
+					X=x+((Y-y)/slope);
+					
+				}
+				console.log("Intersection point",X,Y,"("+x+","+y+")",i,"th iteration",slope);
+				Regioncode=getRegionCode(X,Y);
+				console.log("Regioncode",Regioncode.toString());
+				if((Regioncode.toString()=="0,0,0,0") || (i==1)){			//If the regioncode is 0,0,0,0 or it is 2nd iteration return the intersection point
+					intersecpoint[0]=X; intersecpoint[1]=Y;
+					return intersecpoint;
+				}
+				X=0;Y=0;
+			}
+		}
+	</script>
+  </body>
+</html>

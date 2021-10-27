@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>Laptop Scene</title>
+    </head>
+<body>
+<script src="Three.js"></script>
+        <script src="OrbitControls.js"></script>
+<script>
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const renderer = new THREE.WebGLRenderer();
+//const controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+renderer.setClearColor('cyan');
+
+const geometry = new THREE.BoxGeometry(6,1,0.3);
+const material = new THREE.MeshBasicMaterial( { color: 'orange' } );
+//const cube = new THREE.Mesh( geometry, material );
+var table = new THREE.Mesh( geometry, material ); //front view
+
+table.rotateX( Math.PI / 2 );
+table.rotateY(0);
+table.position.x = -0.5;
+table.position.y = 0.5;
+table.position.z = 3;
+
+scene.add(table);
+
+//camera.position.z = 10;
+//camera.position.y = 1;
+//camera.position.x = 0;
+
+const geometry1 = new THREE.BoxGeometry(0.2,3,0.1);
+const material1 = new THREE.MeshBasicMaterial( { color: 'orange' } );
+var leg1 = new THREE.Mesh(geometry1,material1);
+leg1.position.x=-5;
+leg1.position.y=-0.9;
+leg1.position.z=0;
+scene.add(leg1);
+
+//const geometry2 = new THREE.BoxGeometry(0.2,3,0.1);
+const material2 = new THREE.MeshBasicMaterial( { color: 'red' } );
+var leg2 = new THREE.Mesh(geometry1,material2);
+leg2.position.x=-5;
+leg2.position.y=-0.9;
+leg2.position.z=leg1.position.z-1;
+scene.add(leg2);
+
+var leg3 = new THREE.Mesh(geometry1,material2);
+leg3.position.x=3;
+leg3.position.y=-0.8;
+leg3.position.z=leg1.position.x+4;
+scene.add(leg3);
+
+var leg4 = new THREE.Mesh(geometry1,material1);
+leg4.position.x=3.2;
+leg4.position.y=-0.9;
+leg4.position.z=leg1.position.x+5;
+scene.add(leg4);
+
+const geometry4 = new THREE.BoxGeometry(2,1,2,1);
+const material4 = new THREE.MeshPhongMaterial( { color: 'black' } );
+var box1 = new THREE.Mesh(geometry4,material4);
+scene.add(box1);
+
+box1.position.x = -0.5;
+box1.position.y = 1;
+box1.position.z = 0.8;
+
+const geometry3 = new THREE.BoxGeometry(2,2,2,2);
+const material3 = new THREE.MeshPhongMaterial( { color: 'grey' } );
+var box = new THREE.Mesh(geometry3,material3);
+scene.add(box);
+
+box.position.x = -0.5;
+box.position.y = 1.8;
+
+const width = 10;
+const height = 10;
+const intensity = 1;
+/*const rectLight = new THREE.RectAreaLight( 0xffffff, intensity,  width, height );
+rectLight.position.set( 5, 5, 0 );
+rectLight.lookAt( 0, 0, 0 );
+scene.add( rectLight )
+
+const rectLightHelper = new THREE.RectAreaLightHelper( rectLight );
+rectLight.add( rectLightHelper );
+*/
+var light = new THREE.PointLight("lightgreen");
+            light.position.set(-0.3,2.3,6);
+                scene.add( light );
+
+
+//controls.target.set(0,4,0);
+//controls.update();
+
+const animate = function () {
+requestAnimationFrame( animate );
+
+//table.rotation.x += 0.01;
+//table.rotation.y += 0.01;
+//leg1.rotation.x += 0.01;
+//leg1.rotation.y += 0.01;
+//leg2.rotation.x += 0.01;
+//leg2.rotation.y += 0.01;
+camera.position.x = 0;
+camera.position.y = 0;
+camera.position.z = 10;
+
+
+renderer.render( scene, camera );
+}; //renderer.render( scene, camera );
+
+
+animate();
+</script>
+</body>
+</html>

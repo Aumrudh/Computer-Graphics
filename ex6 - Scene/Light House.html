@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Light House</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<script src="Three.js"></script>
+		<script>
+			const scene = new THREE.Scene();
+			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+			
+			const geometry = new THREE.CylinderGeometry( 1, 3, 8, 12 );
+			const material = new THREE.MeshBasicMaterial( {color: "brown"} );
+			const cylinder = new THREE.Mesh( geometry, material );
+			scene.add( cylinder );
+			
+			const geometry1 = new THREE.CylinderGeometry( 0.8, 0.8, 1, 12 );
+			const material1 = new THREE.MeshPhongMaterial( {color: "#fffcbb"} );
+			const cylinder1 = new THREE.Mesh( geometry1, material1 );
+			scene.add( cylinder1 );
+
+			const geometry2 = new THREE.BoxGeometry(1,12,1,1);
+			const material2 = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
+			const obj = new THREE.Mesh( geometry2, material2 );
+			scene.add( obj );
+
+			const geometry3 = new THREE.BoxGeometry(1,12,1,1);
+			const material3 = new THREE.MeshPhongMaterial( { color: 0x00ff00 } );
+			const obj1 = new THREE.Mesh( geometry3, material3 );
+			scene.add( obj1 );
+			
+			var light = new THREE.PointLight(0xffffff);
+			light.position.set(100,150,100);
+			scene.add( light );
+
+			var loop = function() 
+			{
+				requestAnimationFrame(loop);
+				light.position.x = 200 * Math.sin(Date.now() / 240);
+				light.position.z = 200 * Math.cos(Date.now() / 240);
+				renderer.render(scene, camera);
+			};
+			
+			renderer.setClearColor("skyblue");
+			camera.position.z = 10;
+			
+			obj.position.x = -12;
+			obj.position.y = 1;
+
+			obj1.position.x = 12;
+			obj1.position.y = 1;
+
+			cylinder.position.x = 0;
+			cylinder.position.y = 0;
+
+			cylinder1.position.x = 0;
+			cylinder1.position.y = 4.7;
+			
+			const animate = function () {
+				requestAnimationFrame( animate );
+				loop();
+				renderer.render( scene, camera );
+			};
+			
+			animate();
+		</script>
+	</body>
+</html>

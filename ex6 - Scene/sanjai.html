@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>My first three.js app</title>
+        <style>
+            body { margin: 0; }
+        </style>
+    </head>
+    <body>
+        <center><button onclick="lightOn()">ON</button>
+        <button onclick="lightOff()">OFF</button></center>
+        <script src="three.js"></script>
+        <script src="OrbitControls.js"></script>
+        <script>
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+            const renderer = new THREE.WebGLRenderer();
+            const controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+            renderer.setClearColor('white');
+
+            const geometry = new THREE.BoxGeometry(8,4,0.2);
+            const material = new THREE.MeshPhongMaterial( { color: 'orange' } );
+            //const cube = new THREE.Mesh( geometry, material );
+            var table = new THREE.Mesh( geometry, material ); //front view 
+
+            table.rotateX( Math.PI / 2 );
+            table.rotateY(0);
+            table.position.x = -0.5;
+            table.position.y = 0.5;
+            table.position.z = 3;
+
+            scene.add(table);
+
+            const geometry0 = new THREE.BoxGeometry(2,2,0.2);
+            const material0 = new THREE.MeshPhongMaterial( { color: 'violet' } );
+            var book = new THREE.Mesh(geometry0,material0);
+            book.rotateX(Math.PI/2);
+            book.position.x = table.position.x;
+            book.position.y = table.position.y+0.1;
+            book.position.z = table.position.z-0.1;
+            scene.add(book);
+
+            camera.position.z = 16;
+            camera.position.y = 5
+
+            const geometry1 = new THREE.BoxGeometry(0.3,3,0.2);//w,h,de
+            const material1 = new THREE.MeshBasicMaterial( { color: 'blue' } );
+            var leg1 = new THREE.Mesh(geometry1,material1);
+            leg1.position.x = table.position.x-3.5;
+            leg1.position.y = table.position.y-1.5;
+            leg1.position.z = table.position.z+1.7;
+            scene.add(leg1);
+
+            var leg2 = new THREE.Mesh(geometry1,material1);
+            leg2.position.x = leg1.position.x;
+            leg2.position.y = leg1.position.y;
+            leg2.position.z = leg1.position.z-3.5;
+            scene.add(leg2);
+
+            var leg3 = new THREE.Mesh(geometry1,material1);
+            leg3.position.x = leg2.position.x+7;
+            leg3.position.y = leg2.position.y;
+            leg3.position.z = leg2.position.z;
+            scene.add(leg3);    
+
+            var leg4 = new THREE.Mesh(geometry1,material1);
+            leg4.position.x = leg1.position.x+7;
+            leg4.position.y = leg1.position.y;
+            leg4.position.z = leg1.position.z;
+            scene.add(leg4);
+
+            const geometry3 = new THREE.CylinderGeometry( 0.1, 0.5, 1, 20 );
+            const material3 = new THREE.MeshBasicMaterial( {color:'lightgreen'} );  
+            var cone = new THREE.Mesh(geometry3,material3);
+            cone.position.x = book.position.x;
+            cone.position.y = book.position.y+5;
+            cone.position.z = book.position.z;
+            scene.add(cone);
+
+            
+
+            const geometry4 = new THREE.BoxGeometry(0.3,1.8,0.4);//w,h,de
+            const material4 = new THREE.MeshBasicMaterial( { color: 'green' } );
+            var handle = new THREE.Mesh(geometry4,material4);
+            handle.position.x = cone.position.x;
+            handle.position.y = cone.position.y+1.4;
+            handle.position.z = cone.position.z;
+            scene.add(handle);
+
+            //const geometry6 = new THREE.SphereGeometry();
+
+            const geometry6 = new THREE.TorusGeometry( 0.4,0.1,10,100 );
+            const material6 = new THREE.MeshBasicMaterial({color :'blue'});
+            var fanring = new THREE.Mesh(geometry6,material6);
+            fanring.position.x = handle.position.x;
+            fanring.position.y = handle.position.y+3;
+            fanring.position.z = handle.position.z;
+            fanring.rotateX(Math.PI/2);
+            scene.add(fanring);
+
+            const geometry7 = new THREE.BoxGeometry(3,0.1,0.7);
+            const material7 = new THREE.MeshBasicMaterial({color :'blue'});
+            var blade1 = new THREE.Mesh(geometry7,material7);
+            blade1.position.x = fanring.position.x+2;
+            blade1.position.z = fanring.position.z;
+            blade1.position.y = fanring.position.y;
+            scene.add(blade1);
+
+            var blade2 = new THREE.Mesh(geometry7,material7);
+            blade2.position.x = fanring.position.x-2;
+            blade2.position.z = fanring.position.z;
+            blade2.position.y = fanring.position.y;
+            scene.add(blade2);
+
+            var blade3 = new THREE.Mesh(geometry7,material7);
+            blade3.position.x = fanring.position.x;
+            blade3.position.z = fanring.position.z+2;
+            blade3.position.y = fanring.position.y;
+            //blade3.rotateZ(Math.PI/2);
+            blade3.rotateY(Math.PI/2);
+            //scene.add(blade3);
+
+            var blade4 = new THREE.Mesh(geometry7,material7);
+            blade4.position.x = fanring.position.x;
+            blade4.position.z = fanring.position.z-2;
+            blade4.position.y = fanring.position.y;
+            blade4.rotateY(Math.PI/2);
+            scene.add(blade4);
+
+            controls.target.set(0, 4, 0);
+            controls.update();
+
+            const light = new THREE.PointLight( 'white', 1, 100 );
+            scene.add( light );
+
+            function lightOn(){
+                animate();
+                light.position.set(-0.8,2,2.5);
+                renderer.setClearColor('grey');
+            }
+            function lightOff(){
+                light.position.set(100,100,100);
+                renderer.setClearColor('lightblue');
+            }
+
+            const group = new THREE.Group();
+            group.add(cone);
+            group.add(handle);
+            group.add(light);
+            scene.add(group);
+
+            const fangroup = new THREE.Group();
+            fangroup.add(fanring);
+            fangroup.add(blade1);
+            fangroup.add(blade2);
+            fangroup.add(blade3);
+            fangroup.add(blade4);
+            fangroup.position.x = table.position.x-2;
+            //scene.add(fangroup);
+
+            const tabgroup = new THREE.Group();
+            tabgroup.add(table);
+            tabgroup.add(book);
+            tabgroup.add(leg1);
+            tabgroup.add(leg2);
+            tabgroup.add(leg3);
+            tabgroup.add(leg4);
+            scene.add(tabgroup);
+            const animate = function () {
+                requestAnimationFrame( animate );
+                
+                 group.rotation.y+=0.1;
+                //tabgroup.rotation.y+=0.1;
+                //fangroup.rotation.x+=0.1;
+                //fangroup.rotation.z+=0.1;
+                //fangroup.rotation.z+=0.1;
+                //fangroup.rotation.y+=0.01
+                
+               renderer.render( scene, camera );
+            };
+            renderer.render( scene, camera );
+
+
+        //animate();
+        // admi no : 15550
+
+        //
+        //
+        //
+        </script>
+    </body>
+</html>

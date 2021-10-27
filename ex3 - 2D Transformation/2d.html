@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>2D Transformation</title>
+</head>
+<body>
+<center>
+<h1>2D Transformation</h1></center>
+
+<div class="idetails" style="position: absolute;left: 640px; top: 110px;">		
+		X1 : <input type="text" name="x1" id="x1" ><br><br>
+		Y1 : <input type="text" name="y1" id="y1" ><br><br>
+		X2 : <input type="text" name="x2" id="x2" ><br><br>
+		Y2 : <input type="text" name="y2" id="y2" ><br><br>
+		X3 : <input type="text" name="x3" id="x3" ><br><br>
+		Y3 : <input type="text" name="y3" id="y3" ><br><br>		
+	
+</div>
+
+
+<div class="drop" style="position: absolute;left: 625px; top: 350px;">
+
+<label for="transforms"></label>
+<select id="transforms" name="transforms">
+  <option value="Translation">Translation</option>
+  <option value="Scaling">Scaling</option>
+  <option value="Rotation">Rotation</option>
+  <option value="Reflection">Reflection</option>
+  <option value="Shearing">Shearing</option>
+</select>
+<br>
+</div>
+
+<button onclick="drawTriangle()" style="position: absolute;left: 725px; top: 350px;">Draw</button>
+
+<button onclick="transform()"style="position: absolute;left: 780px; top: 350px;">Transform</button>
+
+<div class="canvas" style="position: absolute;left: 325px; top: 450px;">
+
+<canvas id="c" width="800" height="800"></canvas>
+</div>
+<script type="text/javascript">
+
+var xx=parseInt(400);  //half of canvas
+
+canvas=document.getElementById("c");
+context=canvas.getContext("2d");
+context.beginPath();
+context.lineWidth = 4;
+
+context.moveTo(0,400);
+context.lineTo(800,400);
+context.stroke();
+
+context.moveTo(400,0);
+context.lineTo(400,800);
+
+context.stroke();
+context.closePath();
+var triangle=[];
+for (var i = 0; i < 3; i++) {
+  triangle[i] = new Array(3);
+}
+
+function matrixMultiplication(mat1, mat2){ 
+	 var result = new Array(3); 
+	 for (var i = 0; i < 3; i++){ 
+	 		result[i] = new Array(3); 
+	 		for (var j = 0; j < 3; j++){ 
+	 				result[i][j] = 0; 
+	 				for (var k = 0; k < 3; k++){ 
+	 						result[i][j] += mat1[i][k] * mat2[k][j]; 
+	 				} 
+	 		}	 
+	 } 
+	 return result; 
+}
+
+
+function drawTriangle(){	
+	var x1=document.getElementById("x1").value;
+	x1=parseInt(x1);
+	//console.log(x1);
+	var y1=document.getElementById("y1").value;
+	y1=parseInt(y1);	
+	var x2=document.getElementById("x2").value;
+	x2=parseInt(x2);
+	var y2=document.getElementById("y2").value;
+	y2=parseInt(y2);
+	var x3=document.getElementById("x3").value;
+	x3=parseInt(x3);
+	var y3=document.getElementById("y3").value;
+	y3=parseInt(y3);
+	
+	triangle[0][0]=x1;
+	triangle[0][1]=x2;
+	triangle[0][2]=x3;
+	triangle[1][0]=y1;
+	triangle[1][1]=y2;
+	triangle[1][2]=y3;
+	triangle[2][0]=parseInt(1);
+	triangle[2][1]=parseInt(1);
+	triangle[2][2]=parseInt(1);
+
+	for(var i=0;i<3;i++){
+		for(var j = 0; j < 3; j++){
+			console.log(triangle[i][j]);
+		}
+	} 
+
+
+	console.log("inside drawTriangle")
+	draw(xx+x1,xx-y1,xx+x2,xx-y2,xx+x3,xx-y3,"black");
+
+}
+
+function transform(){
+	 var transformation = document.getElementById("transforms"); 
+	 if (transformation.value === "Translation"){ 
+	 	console.log("Translation");
+		 var tX = parseInt(100); 
+		 var tY = parseInt(100);
+		 var transMat = matrixMultiplication( 
+		 [ 
+		 [1,0,tX], 
+		 [0,1,tY], 
+		 [0,0,1] 
+		 ],triangle); 
+		 draw(xx+transMat[0][0],xx-transMat[1][0],xx+transMat[0][1],xx-transMat[1][1],xx+transMat[0][2],xx-transMat[2][2],"red");
+	 }
+	 if (transformation.value === "Scaling"){ 
+		 console.log("scaling");
+		 var sX = parseInt(2); 
+		 var sY = parseInt(2);  
+		 var transMat = matrixMultiplication( 
+		 [ 
+		 [sX,0,0], 
+		 [0,sY,0], 
+		 [0,0,1] 
+		 ],triangle); 
+		 draw(xx+transMat[0][0],xx-transMat[1][0],xx+transMat[0][1],xx-transMat[1][1],xx+transMat[0][2],xx-transMat[2][2],"blue");
+	 }
+	 if (transformation.value === "Rotation"){ 
+	 	console.log("Rotation");
+		 var tt = 270; 
+ 		 tt = tt * (Math.PI / 180); 
+		 var transMat = matrixMultiplication( 
+		 [[Math.cos(tt), -Math.sin(tt),0], 
+ 		 [Math.sin(tt), Math.cos(tt),0], 
+ 		 [0,0,1]],triangle); 
+		 draw(xx+transMat[0][0],xx-transMat[1][0],xx+transMat[0][1],xx-transMat[1][1],xx+transMat[0][2],xx-transMat[2][2],"cyan");
+	 }
+	 if (transformation.value === "Reflection"){ 
+		 console.log("Reflextion");
+		 var transMat = matrixMultiplication( 
+		  [[0,1,0], 
+ 			[1,0,0], 
+ 			[0,0,1]],triangle); 
+		 draw(xx+transMat[0][0],xx-transMat[1][0],xx+transMat[0][1],xx-transMat[1][1],xx+transMat[0][2],xx-transMat[2][2],"yellow");
+	 }
+	 if (transformation.value === "Shearing"){ 
+	 	console.log("Shearing");
+		 var shX = parseFloat(.5); 
+		 var shY = parseFloat(.5);  
+		 var transMat = matrixMultiplication( 
+		 [[1,shY,0], 
+		 [shX,1,0], 
+		 [0,0,1]],triangle); 
+		 draw(xx+transMat[0][0],xx-transMat[1][0],xx+transMat[0][1],xx-transMat[1][1],xx+transMat[0][2],xx-transMat[2][2],"green");
+	 }
+}
+
+function draw(x1,y1,x2,y2,x3,y3,color){
+	context.beginPath();
+	context.lineWidth = 2;
+	context.strokeStyle=color;
+
+	context.moveTo(x1,y1);
+	context.lineTo(x2,y2);
+	context.lineTo(x3,y3);
+	context.lineTo(x1,y1);
+
+	context.stroke();
+	context.closePath();
+}
+</script>
+</body>
+</html>

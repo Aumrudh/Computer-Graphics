@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>2D Transformation</title>
+</head>
+<body>
+<center>
+<h1>Composite Transformation</h1></center>
+
+
+<button onclick="drawTriangle()" style="position: absolute;left: 625px; top: 100px;">Draw</button>
+
+<button onclick="transform()"style="position: absolute;left: 680px; top: 100px;">Transform</button>
+
+<div class="canvas" style="position: absolute;left: 325px; top: 150px;">
+
+<canvas id="c" width="800" height="800"></canvas>
+</div>
+<script type="text/javascript">
+
+var xx=parseInt(400);  //half of canvas
+
+canvas=document.getElementById("c");
+context=canvas.getContext("2d");
+context.beginPath();
+context.lineWidth = 4;
+
+context.moveTo(0,400);
+context.lineTo(800,400);
+context.stroke();
+
+context.moveTo(400,0);
+context.lineTo(400,800);
+
+context.stroke();
+context.closePath();
+var triangle=[];
+for (var i = 0; i < 3; i++) {
+  triangle[i] = new Array(3);
+}
+
+function matrixMultiplication(mat1, mat2){ 
+	 var result = new Array(3); 
+	
+	for (var i = 0; i < 3; i++){
+		result[i] = new Array(3); 
+	 for (var j = 0; j < 3; j++){
+		result[i][j]=0;
+	   for (var k = 0; k < 3; k++){
+	 	result[i][j] += mat1[i][k] * mat2[k][j]; 
+	  }
+	 }
+	}
+	 return result; 
+}
+
+
+function drawTriangle(){	
+	var p1=window.prompt("Enter x1 y1 points").split(" ");
+	triangle[0][0]=parseInt(p1[0]);
+	triangle[1][0]=parseInt(p1[1]);
+	var p2=window.prompt("Enter x2 y2 points").split(" ");
+	triangle[0][1]=parseInt(p2[0]);
+	triangle[1][1]=parseInt(p2[1]);
+	var p3=window.prompt("Enter x3 y3 points").split(" ");
+	triangle[0][2]=parseInt(p3[0]);
+	triangle[1][2]=parseInt(p3[1]);
+	triangle[2][0]=parseInt(1);
+	triangle[2][1]=parseInt(1);
+	triangle[2][2]=parseInt(1);
+
+	for(var i=0;i<3;i++){
+		for(var j = 0; j < 3; j++){
+			console.log(triangle[i][j]);
+		}
+	} 
+
+
+	console.log("inside drawTriangle")
+	draw(xx+triangle[0][0],xx-triangle[1][0],xx+triangle[0][1],xx-triangle[1][1],xx+triangle[0][2],xx-triangle[1][2],"black");
+
+}
+
+function transform(){
+	  var transMat = matrixMultiplication( //reflection
+		 [[-1,0,0],  
+		 [0,1,0], 
+		 [0,0,1]],triangle); 
+	console.log(xx+transMat[0][0],xx-transMat[1][0],xx+transMat[0][1],xx-transMat[1][1],xx+transMat[0][2],xx-transMat[1][2],"red");
+		var tt = 45; 
+ 		 tt = tt * (Math.PI / 180); 
+	 transMat = matrixMultiplication( 
+		 [[Math.cos(tt), -Math.sin(tt),0], 
+ 		 [Math.sin(tt), Math.cos(tt),0], 
+ 		 [0,0,1]],transMat);  
+	/*transMat = matrixMultiplication( 
+		 [[1,-1,0], 
+		 [1,1,0], 
+		 [0,0,1]],transMat); */
+	console.log(xx+transMat[0][0],xx-transMat[1][0],xx+transMat[0][1],xx-transMat[1][1],xx+transMat[0][2],xx-transMat[1][2],"red");
+	transMat = matrixMultiplication( //scaling
+		 [[1.5,0,0], 
+		 [0,1.5,0], 
+		 [0,0,1]],transMat); 
+		console.log(xx+transMat[0][0],xx-transMat[1][0],xx+transMat[0][1],xx-transMat[1][1],xx+transMat[0][2],xx-transMat[1][2],"red");
+		 draw(xx+transMat[0][0],xx-transMat[1][0],xx+transMat[0][1],xx-transMat[1][1],xx+transMat[0][2],xx-transMat[1][2],"red");
+}
+
+function draw(x1,y1,x2,y2,x3,y3,color){
+	context.beginPath();
+	context.lineWidth = 2;
+	context.strokeStyle=color;
+
+	context.moveTo(x1,y1);
+	context.lineTo(x2,y2);
+	context.lineTo(x3,y3);
+	context.lineTo(x1,y1);
+
+	context.stroke();
+	context.closePath();
+}
+</script>
+</body>
+</html>

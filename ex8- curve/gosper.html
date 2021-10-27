@@ -1,0 +1,71 @@
+<html>
+    <canvas id="c1" style= "border: 2px solid black;" width = "1000px" height = "1000px"></canvas>
+    <script>
+        const canvas=document.getElementById("c1");
+        const c = canvas.getContext("2d");
+        const x = "X+YF++YF-FX--FXFX-YF+,"//"XF-YF--YF+XF++XFXF+Y-"//"XF-YF--YF+XF++XFXF+Y-"//"-YF+XFX+FY-"//"XF-YF--YF+XF++XFXF+Y-"//A – B – – B + A + + A A + B –
+        const y = "-FX+YFYF++YF+FX--FX-Y"//"+XF-YFYF--YF-XF++XF+YF"//"+XF-YFY-FX+"//"+XF-YFYF--YF-XF++XF+YF"//+ A – B B – – B – A + + A + B
+        let a = 0;
+        let len = 7;
+        let res;
+        let x1 = 500;
+        let y1 = -500;
+
+        function drawLine(x1,y1,x2,y2){
+                c.beginPath();
+                c.lineWidth=1;
+                c.moveTo(x1+250,250-y1);
+                c.lineTo(x2+250,250-y2);
+                c.stroke();
+        }
+        function gosper(s,n)
+        {
+            if(n==0)
+            {
+                console.log(s);
+                for (var i = 0; i < s.length; i++)
+                {
+                    if(s.charAt(i) == '-')
+                    {
+                        a -= 60;//90
+
+                    }
+                    else if(s.charAt(i) == '+')
+                    {
+                        a += 60;//90
+                       
+                    }
+                    else if(s.charAt(i) == 'F')
+                    {
+                        let x2,y2;
+                        x2 = x1+len*Math.cos(Math.PI/180*a);
+                        y2 = y1+len*Math.sin(Math.PI/180*a);
+                        drawLine(x1,y1,x2,y2);
+                        x1 = x2;
+                        y1 = y2;
+                    }          
+                }
+            }
+            else
+            {
+                var s2="";
+                for (var i = 0; i < s.length; i++) {
+                    if(s.charAt(i) == 'X')
+                    {
+                        s2 += x;
+                    }
+                    else if(s.charAt(i) == 'Y')
+                    {
+                        s2 += y;
+                    }
+                    else
+                    {
+                        s2 += s[i];
+                    }
+                }
+                gosper(s2,--n);
+            }
+        }
+        gosper(x,3);
+   </script>
+</html>

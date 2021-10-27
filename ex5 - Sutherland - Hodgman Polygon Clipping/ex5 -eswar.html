@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<body>
+<center><canvas id = "c1" style = "border: 1px solid black;" width = "800px" height = "800px">
+</canvas></center>
+<script>
+
+var k,i;
+var xmin = parseInt(prompt("Enter xwmin value: "));
+var ymin = parseInt(prompt("Enter ywmin value: "));
+var xmax = parseInt(prompt("Enter xwmax value: "));
+var ymax = parseInt(prompt("Enter ywmax value: "));
+var n = parseInt(prompt("Enter no of vertices in the polygon: "));
+
+var temp=n*2+2;
+
+var v = new Array(temp);
+var nv = new Array(100);
+
+for( i=0; i<n*2;i+=2)
+{
+v[i]=parseInt(prompt("Enter x: "));
+v[i+1]=parseInt(prompt("Enter y: "));
+}
+
+v[i]=v[0];
+v[i+1]=v[1];
+
+for(var i=0;i<n+4;i+=2)
+{
+drawline(v[i],v[i+1],v[i+2],v[i+3],'blue');
+}
+
+drawline(xmin,ymin,xmax,ymin,'black');
+drawline(xmax,ymin,xmax,ymax,'black');
+drawline(xmin,ymin,xmin,ymax,'black');
+drawline(xmin,ymax,xmax,ymax,'black');
+
+
+k=0;
+for(var i=0;i<temp;i+=2)
+leftClipper(v[i],v[i+1],v[i+2],v[i+3]);
+n=k/2;
+for(i=0;i<k;i++)
+v[i]=nv[i];
+
+v[i]=v[0];
+v[i+1]=v[1];
+
+for(i=0;i<k;i+=2)
+console.log(v[i],v[i+1]);
+
+
+k=0;
+for(var i=0;i<temp;i+=2)
+bottomClipper(v[i],v[i+1],v[i+2],v[i+3]);
+n=k/2;
+for(i=0;i<k;i++)
+v[i]=nv[i];
+
+v[i]=v[0];
+v[i+1]=v[1];
+
+for(i=0;i<k;i+=2)
+console.log(v[i],v[i+1]);
+
+k=0;
+for(var i=0;i<temp;i+=2)
+rightClipper(v[i],v[i+1],v[i+2],v[i+3]);
+n=k/2;
+for(i=0;i<k;i++)
+v[i]=nv[i];
+
+v[i]=v[0];
+v[i+1]=v[1];
+
+for(i=0;i<k;i+=2)
+console.log(v[i],v[i+1]);
+
+k=0;
+for(var i=0;i<temp;i+=2)
+topClipper(v[i],v[i+1],v[i+2],v[i+3]);
+n=k/2;
+for(i=0;i<k;i++)
+v[i]=nv[i];
+
+v[i]=v[0];
+v[i+1]=v[1];
+
+for(i=0;i<k;i+=2)
+console.log(v[i],v[i+1]);
+
+
+/*for(var i=0;i<n+4;i+=2)
+{
+drawline(v[i],v[i+1],v[i+2],v[i+3],'red');
+}*/
+
+const c = document.querySelector('#c1');
+    const ct = c.getContext('2d');
+    
+    ct.lineWidth = 1;
+    ct.beginPath();
+ct.moveTo(400+v[0],400- v[1]);
+for(var i=2;i<n+4;i+=2)
+{    
+    ct.lineTo(400+v[i], 400-v[i+1]);
+}
+
+    ct.closePath();
+    ct.fillStyle = 'red';
+    ct.fill();
+
+
+
+function leftClipper(x1,y1,x2,y2)
+{
+if(x2-x1)
+{
+m=(y2-y1)/(x2-x1);
+}
+if(x1>=xmin && x2>=xmin)
+{
+nv[k]=x2;
+nv[k+1]=y2;
+k+=2;
+}
+if(x1<xmin && x2>=xmin)
+{
+nv[k]=xmin;
+nv[k+1]=y1+m*(xmin-x1);
+nv[k+2]=x2;
+nv[k+3]=y2;
+k+=4;
+}
+if(x1>=xmin && x2<xmin)
+{
+nv[k]=xmin;
+nv[k+1]=y1+m*(xmin-x1);
+k+=2;
+}
+}
+
+function rightClipper(x1,y1,x2,y2)
+{
+if(x2-x1)
+{
+m=(y2-y1)/(x2-x1);
+}
+if(x1<=xmax && x2<=xmax)
+{
+nv[k]=x2;
+nv[k+1]=y2;
+k+=2;
+}
+if(x1>xmax && x2<=xmax)
+{
+nv[k]=xmax;
+nv[k+1]=y1+m*(xmax-x1);
+nv[k+2]=x2;
+nv[k+3]=y2;
+k+=4;
+}
+if(x1<=xmax && x2>xmax)
+{
+nv[k]=xmax;
+nv[k+1]=y1+m*(xmax-x1);
+k+=2;
+}
+}
+
+
+function bottomClipper(x1,y1,x2,y2)
+{
+if(y2-y1)
+{
+m=(x2-x1)/(y2-y1);
+}
+if(y1>=ymin && y2>=ymin)
+{
+nv[k]=x2;
+nv[k+1]=y2;
+k+=2;
+}
+if(y1<xmin && y2>=xmin)
+{
+nv[k]=x1+m*(ymin-y1);
+nv[k+1]=ymin;
+nv[k+2]=x2;
+nv[k+3]=y2;
+k+=4;
+}
+if(y1>=ymin && y2<ymin)
+{
+nv[k]=x1+m*(ymin-y1);
+nv[k+1]=ymin;
+k+=2;
+}
+}
+
+function topClipper(x1,y1,x2,y2)
+{
+if(y2-y1)
+{
+m=(x2-x1)/(y2-y1);
+}
+if(y1<=ymax && y2<=ymax)
+{
+nv[k]=x2;
+nv[k+1]=y2;
+k+=2;
+}
+if(y1>ymax && y2<=ymax)
+{
+nv[k]=x1+m*(ymax-y1);
+nv[k+1]=ymax;
+nv[k+2]=x2;
+nv[k+3]=y2;
+k+=4;
+}
+if(y1<=ymax && y2>ymax)
+{
+nv[k]=x1+m*(ymax-y1);
+nv[k+1]=ymax;
+k+=2;
+}
+}
+
+
+
+function drawline(x,y,x1,y1,colorline) {
+    const canvas = document.querySelector('#c1');
+    if (!canvas.getContext) {
+        return;
+    }
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = colorline;
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(400+x,400-y);
+    ctx.lineTo(400+x1,400-y1);
+    ctx.stroke();
+
+}
+</script>
+</body>
+</html>
+

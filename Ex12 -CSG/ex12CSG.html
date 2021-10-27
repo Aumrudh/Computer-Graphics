@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>CSG</title>
+    </head>
+    <body>
+		<script type="text/javascript" src="three.js"></script>
+		<script type="text/javascript" src="ThreeCSG.js"></script>
+		<script type="text/javascript">	
+                var renderer = new THREE.WebGLRenderer({antialias:true});
+                var scene = new THREE.Scene();
+                var camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight, 0.1, 1000 );
+                renderer.setSize( window.innerWidth-100, window.innerHeight-100 );
+                document.body.appendChild( renderer.domElement );
+				//var controls = new THREE.OrbitControls( camera );
+				//controls.autoRotate = true;
+				var c1 = new THREE.ConeGeometry( 3, 3, 3 );
+				var o1 = new THREE.Mesh(c1);
+				var c2 = new THREE.SphereGeometry( 1, 32, 32 );
+				var o2 = new THREE.Mesh(c2);
+				var c3 = new THREE.SphereGeometry( 1, 32, 32 );
+				var o3 = new THREE.Mesh(c3);
+				light = new THREE.DirectionalLight( 0xabcdef );
+				light.position.set( 1, 1, 1 ).normalize();
+				scene.add( light );
+				o2.position.y += 1;
+				//o3.position.y -= 1;
+				var b1 = new ThreeBSP(o1);
+				var b2 = new ThreeBSP(o2);
+				var b3 = new ThreeBSP(o3);
+				//var b = b3.subtract(b2);
+				var b = b3.union(b2);
+				//var b = b3.intersect(b2);
+				var r = b.toMesh(new THREE.MeshLambertMaterial({color: "orange"}));
+				r.geometry.computeVertexNormals();
+				scene.add(r);
+				camera.position.z = 5;
+				animate = function(){
+					requestAnimationFrame(animate);
+					renderer.render(scene,camera);
+				};
+				animate();
+				
+		</script>
+	</body>
+</html>
