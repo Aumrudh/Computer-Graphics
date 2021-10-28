@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cohen Sutherland Line Clipping</title>
+</head>
+<body>
+<canvas id = "can" width = "500px" height = "500px">
+</canvas>
+<script>
+ var canvas = document.getElementById("can");
+ var pen = canvas.getContext("2d");
+ var xmin=100;
+ var ymin=100;
+ var xmax=400;
+ var ymax=400;
+
+ var lx1=90;
+ var ly1=450;
+ var lx2=420;
+ var ly2=50;
+
+ var T,B,R,L;
+
+ drawRect();
+ 
+ function drawRect()
+ {
+  pen.moveTo(xmin,ymin);
+  pen.lineTo(xmin,ymax);
+  pen.moveTo(xmin,ymax);
+  pen.lineTo(xmax,ymax);
+  pen.moveTo(xmax,ymax);
+  pen.lineTo(xmax,ymin);
+  pen.moveTo(xmax,ymin);
+  pen.lineTo(xmin,ymin);
+  pen.stroke();
+ }
+
+ function regional(x,y)
+ {
+  if((ymax-y)<0)
+    T=1;
+  else
+    T=0;
+  if((y-ymin)<0)
+    B=1;
+  else
+    B=0;
+  if((xmax-x)<0)
+    R=1;
+  else
+    R=0;
+  if((x-xmin)<0)
+    L=1;
+  else
+    L=0;
+ }
+
+ function check(x,y,x1,y1)
+ {
+  var T1,B1,R1,L1;
+  regional(x,y);
+  T1=T;
+  B1=B;
+  R1=R;
+  L1=L;
+  regional(x1,y1);
+  if((T1+B1+R1+L1)==0 && (T+B+R+L)==0)
+      draw(x,y,x1,y1);
+  else if((T1+T)!=2 && (B1+B)!=2 && (R1+R)!=2 && (L1+L)!=2)
+      cohenclip(x,y,x1,y1);
+ }
+
+ function draw(x,y,x1,y1)
+ {
+  console.log(x,y,x1,y1);
+
+  pen.strokeStyle="green";
+  pen.lineWidth=3;
+  pen.moveTo(lx1,ly1);
+  pen.lineTo(x,y);
+  pen.moveTo(x1,y1);
+  pen.lineTo(lx2,ly2);
+  pen.stroke();
+  
+  pen.strokeStyle="blue";
+  pen.lineWidth=1;
+  pen.moveTo(x,y);
+  pen.lineTo(x1,y1);
+  pen.stroke();
+ }
+
+ function cohenclip(x,y,x1,y1)
+ {
+  var m=(y1-y)/(x1-x);
+  var n=[];
+  n=cohen(x,y,m);
+  var n1=[];
+  n1=cohen(x1,y1,m);
+  draw(n[0],n[1],n1[0],n1[1]);
+ }
+
+ function cohen(x,y,m)
+ {
+  var n=[];
+  n[0]=0;
+  n[1]=0;
+  var nx,ny;
+  regional(x,y);
+  if((T+B+R+L)==0)
+  {
+    n[0]=x;
+    n[1]=y;
+    return n;
+  }
+  else
+  {
+   for(var i=0;i<2;i++)
+   {
+    if(L==1)
+    {
+     nx=xmin;
+     ny=y+m*(nx-x);
+    }
+    else if(R==1)
+    {
+     nx=xmax;
+     ny=y+m*(nx-x);
+    }      
+    else if(B==1)
+    {
+     ny=ymin;
+     nx=x+(ny-y)/m;
+    }
+    else if(T==1)
+    {
+     ny=ymax;
+     nx=x+(ny-y)/m;
+    }
+    regional(nx,ny);
+    if((T+B+R+L)==0)
+    {
+     n[0]=nx;
+     n[1]=ny;
+     return n;
+    }  
+    else
+    {
+     x=nx;
+     y=ny;
+    }
+   }
+   return n;
+  }
+ }
+  
+ check(lx1,ly1,lx2,ly2);
+  
+</script>
+</body>
+</html>
+  

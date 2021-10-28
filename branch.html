@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title> Branch of a Tree </title>
+</head>
+<body>
+<center>
+<canvas id = "can" style = "border: 2px solid black;" width = "600px" height = "600px">
+</canvas>
+<script>
+
+const canvas = document.getElementById('can');
+const ctx = canvas.getContext('2d');
+
+function branch(angle,len,n,x1,y1,x2,y2)
+{
+ if(n == 0)
+ {
+  ctx.moveTo(x1+300,300-y1);
+  ctx.lineTo(x2+300,300-y2);
+  ctx.stroke();
+ }
+ else
+ {
+  var rad,nx1,ny1,nx2,ny2,nx3,ny3,nx4,ny4,nx5,ny5;
+  n = n - 1;
+  len = len/3;
+  nx1 = x1+len*Math.cos(Math.PI/180*angle);
+  ny1 = y1+len*Math.sin(Math.PI/180*angle);
+  branch(angle,len,n,x1,y1,nx1,ny1);
+  angle = angle - 60;
+  nx2 = nx1 + len*Math.cos(Math.PI/180*angle);
+  ny2 = ny1 + len*Math.sin(Math.PI/180*angle);
+  branch(angle,len,n,nx1,ny1,nx2,ny2);
+  angle = angle+60;
+  nx3 = nx1 + len*Math.cos(Math.PI/180*angle);
+  ny3 = ny1 + len*Math.sin(Math.PI/180*angle);
+  branch(angle,len,n,nx1,ny1,nx3,ny3);   
+  angle = angle + 60;
+  nx4 = nx3 + len*Math.cos(Math.PI/180*angle);
+  ny4 = ny3 + len*Math.sin(Math.PI/180*angle);
+  branch(angle,len,n,nx3,ny3,nx4,ny4);
+  angle = angle-60;
+  nx5 = nx3 + len*Math.cos(Math.PI/180*angle);
+  ny5 = ny3 + len*Math.sin(Math.PI/180*angle);
+  branch(angle,len,n,nx3,ny3,nx5,ny5);
+ }
+}
+
+branch(90,180,2,50,0,50,50);
+</script>
+</body>
+</html>
